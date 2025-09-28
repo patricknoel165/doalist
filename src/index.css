@@ -147,11 +147,39 @@
     min-width: var(--touch-target-lg);
   }
 
-  /* Text Size Variants - Applied to all child elements */
-  .text-size-small * { font-size: 0.875em !important; }
-  .text-size-normal * { font-size: 1em !important; }
-  .text-size-large * { font-size: 1.125em !important; }
-  .text-size-xlarge * { font-size: 1.25em !important; }
+  /* Text Size Variants */
+  .text-size-small {
+    font-size: 14px;
+  }
+  
+  .text-size-normal {
+    font-size: 16px;
+  }
+  
+  .text-size-large {
+    font-size: 18px;
+  }
+  
+  .text-size-xlarge {
+    font-size: 20px;
+  }
+
+  /* Override all text elements for text scaling */
+  html.text-size-small {
+    font-size: 14px !important;
+  }
+  
+  html.text-size-normal {
+    font-size: 16px !important;
+  }
+  
+  html.text-size-large {
+    font-size: 18px !important;
+  }
+  
+  html.text-size-xlarge {
+    font-size: 20px !important;
+  }
 
   /* Audio Feedback Styles */
   .audio-success { 
