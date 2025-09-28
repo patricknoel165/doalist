@@ -41,7 +41,6 @@ interface DoaListSettings {
   audioEnabled: boolean;
   voiceEnabled: boolean;
   focusMode: boolean;
-  dyslexiaFont: boolean;
 }
 
 const initialSettings: DoaListSettings = {
@@ -52,7 +51,6 @@ const initialSettings: DoaListSettings = {
   audioEnabled: true,
   voiceEnabled: true,
   focusMode: false,
-  dyslexiaFont: false,
 };
 
 const translations = {
@@ -113,6 +111,8 @@ const translations = {
 const DoaList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState('');
+  const [newTaskPriority, setNewTaskPriority] = useState<Task['priority']>('medium');
+  const [newTaskCategory, setNewTaskCategory] = useState<Task['category']>('personal');
   const [settings, setSettings] = useState<DoaListSettings>(initialSettings);
   const [showSettings, setShowSettings] = useState(false);
   const [currentFocusTask, setCurrentFocusTask] = useState(0);
@@ -168,11 +168,7 @@ const DoaList: React.FC = () => {
     document.documentElement.className = '';
     document.documentElement.classList.add(settings.theme);
     document.documentElement.classList.add(`text-size-${settings.textSize}`);
-    
-    if (settings.dyslexiaFont) {
-      document.documentElement.classList.add('dyslexia-friendly');
-    }
-  }, [settings.theme, settings.textSize, settings.dyslexiaFont]);
+  }, [settings.theme, settings.textSize]);
 
   const showNotification = useCallback((type: 'success' | 'error' | 'info', message: string) => {
     setNotification({ type, message });
@@ -218,7 +214,9 @@ const DoaList: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addTask(newTask);
+    addTask(newTask, newTaskPriority, newTaskCategory);
+    setNewTaskPriority('medium');
+    setNewTaskCategory('personal');
   };
 
   const toggleTask = useCallback((taskId: string) => {
@@ -240,6 +238,13 @@ const DoaList: React.FC = () => {
       showNotification('info', `Task "${taskToDelete.text}" deleted`);
     }
   }, [tasks, showNotification]);
+
+  const editTask = useCallback((taskId: string, newText: string) => {
+    setTasks(prev => prev.map(task => 
+      task.id === taskId ? { ...task, text: newText } : task
+    ));
+    showNotification('success', 'Task updated successfully');
+  }, [showNotification]);
 
   const handleVoiceCommand = useCallback((command: string) => {
     const lowerCommand = command.toLowerCase();
@@ -334,24 +339,46 @@ const DoaList: React.FC = () => {
             {/* Task Input */}
             <Card className="p-4">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col gap-3">
                   <Input
                     ref={inputRef}
                     type="text"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder={t.taskPlaceholder}
-                    className="flex-1 touch-target"
+                    className="w-full touch-target"
                     aria-label={`${t.addTask} (Ctrl+N to focus)`}
                   />
-                  <Button
-                    type="submit"
-                    className="touch-target sm:w-auto w-full"
-                    disabled={!newTask.trim()}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t.addButton}
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <select
+                      value={newTaskPriority}
+                      onChange={(e) => setNewTaskPriority(e.target.value as Task['priority'])}
+                      className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm touch-target"
+                      aria-label="Task priority"
+                    >
+                      <option value="low">Low Priority</option>
+                      <option value="medium">Medium Priority</option>
+                      <option value="high">High Priority</option>
+                    </select>
+                    <select
+                      value={newTaskCategory}
+                      onChange={(e) => setNewTaskCategory(e.target.value as Task['category'])}
+                      className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm touch-target"
+                      aria-label="Task category"
+                    >
+                      <option value="personal">Personal</option>
+                      <option value="work">Work</option>
+                      <option value="school">School</option>
+                    </select>
+                    <Button
+                      type="submit"
+                      className="touch-target sm:w-auto w-full"
+                      disabled={!newTask.trim()}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {t.addButton}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Card>
@@ -382,6 +409,7 @@ const DoaList: React.FC = () => {
                     task={task}
                     onToggle={toggleTask}
                     onDelete={deleteTask}
+                    onEdit={editTask}
                     settings={settings}
                     language={t}
                   />
@@ -403,6 +431,7 @@ const DoaList: React.FC = () => {
                     task={task}
                     onToggle={toggleTask}
                     onDelete={deleteTask}
+                    onEdit={editTask}
                     settings={settings}
                     language={t}
                   />

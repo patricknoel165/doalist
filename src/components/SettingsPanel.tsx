@@ -96,21 +96,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </Select>
               </div>
             </div>
-
-            {/* Dyslexia-Friendly Font */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="dyslexiaFont"
-                  checked={settings.dyslexiaFont}
-                  onCheckedChange={(checked) => updateSetting('dyslexiaFont', checked)}
-                />
-                <Label htmlFor="dyslexiaFont" className="flex items-center gap-2">
-                  <Type className="h-4 w-4" />
-                  Dyslexia-Friendly Font
-                </Label>
-              </div>
-            </div>
           </div>
 
           {/* Audio Settings */}

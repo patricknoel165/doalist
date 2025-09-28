@@ -147,11 +147,11 @@
     min-width: var(--touch-target-lg);
   }
 
-  /* Text Size Variants */
-  .text-size-small { font-size: calc(var(--text-base) * 0.875); }
-  .text-size-normal { font-size: var(--text-base); }
-  .text-size-large { font-size: calc(var(--text-base) * 1.25); }
-  .text-size-xlarge { font-size: calc(var(--text-base) * 1.5); }
+  /* Text Size Variants - Applied to all child elements */
+  .text-size-small * { font-size: 0.875em !important; }
+  .text-size-normal * { font-size: 1em !important; }
+  .text-size-large * { font-size: 1.125em !important; }
+  .text-size-xlarge * { font-size: 1.25em !important; }
 
   /* Audio Feedback Styles */
   .audio-success { 
